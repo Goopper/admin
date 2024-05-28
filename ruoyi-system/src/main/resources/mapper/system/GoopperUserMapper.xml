@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.GoopperUserMapper">
+    
+    <resultMap type="GoopperUser" id="GoopperUserResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="email"    column="email"    />
+        <result property="password"    column="password"    />
+        <result property="avatar"    column="avatar"    />
+        <result property="sex"    column="sex"    />
+        <result property="number"    column="number"    />
+        <result property="roleId"    column="role_id"    />
+        <result property="groupId"    column="group_id"    />
+        <result property="groupName"    column="group_name"    />
+        <result property="enable"    column="enable"    />
+        <result property="accountNonExpired"    column="account_non_expired"    />
+        <result property="accountNonLocked"    column="account_non_locked"    />
+        <result property="credentialsNonExpired"    column="credentials_non_expired"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="modifyTime"    column="modify_time"    />
+    </resultMap>
+
+    <sql id="selectGoopperUserVo">
+        select id, name, email, password, avatar, sex, number, role_id, group_id, enable, account_non_expired, account_non_locked, credentials_non_expired, create_time, modify_time from user
+    </sql>
+
+    <select id="selectGoopperUserList" parameterType="GoopperUser" resultMap="GoopperUserResult">
+        select
+            user.id, user.name, user.email, user.password, user.avatar, user.sex, `group`.name as `group_name`,
+            user.number, user.role_id, user.group_id, user.enable, user.account_non_expired,
+            user.account_non_locked, user.credentials_non_expired, user.create_time, user.modify_time from user
+        left join `group` on user.group_id = `group`.id
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="email != null  and email != ''"> and email like concat('%', #{email}, '%')</if>
+            <if test="sex != null "> and sex = #{sex}</if>
+            <if test="number != null "> and number = #{number}</if>
+            <if test="roleId != null "> and role_id = #{roleId}</if>
+            <if test="groupId != null "> and group_id = #{groupId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="params.beginModifyTime != null and params.beginModifyTime != '' and params.endModifyTime != null and params.endModifyTime != ''"> and modify_time between #{params.beginModifyTime} and #{params.endModifyTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectGoopperUserById" parameterType="Long" resultMap="GoopperUserResult">
+        <include refid="selectGoopperUserVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertGoopperUser" parameterType="GoopperUser" useGeneratedKeys="true" keyProperty="id">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="email != null and email != ''">email,</if>
+            <if test="password != null">password,</if>
+            <if test="avatar != null">avatar,</if>
+            <if test="sex != null">sex,</if>
+            <if test="number != null">number,</if>
+            <if test="roleId != null">role_id,</if>
+            <if test="groupId != null">group_id,</if>
+            <if test="enable != null">enable,</if>
+            <if test="accountNonExpired != null">account_non_expired,</if>
+            <if test="accountNonLocked != null">account_non_locked,</if>
+            <if test="credentialsNonExpired != null">credentials_non_expired,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="modifyTime != null">modify_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="email != null and email != ''">#{email},</if>
+            <if test="password != null">#{password},</if>
+            <if test="avatar != null">#{avatar},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="number != null">#{number},</if>
+            <if test="roleId != null">#{roleId},</if>
+            <if test="groupId != null">#{groupId},</if>
+            <if test="enable != null">#{enable},</if>
+            <if test="accountNonExpired != null">#{accountNonExpired},</if>
+            <if test="accountNonLocked != null">#{accountNonLocked},</if>
+            <if test="credentialsNonExpired != null">#{credentialsNonExpired},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="modifyTime != null">#{modifyTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateGoopperUser" parameterType="GoopperUser">
+        update user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="email != null and email != ''">email = #{email},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="roleId != null">role_id = #{roleId},</if>
+            <if test="groupId != null">group_id = #{groupId},</if>
+            <if test="enable != null">enable = #{enable},</if>
+            <if test="accountNonExpired != null">account_non_expired = #{accountNonExpired},</if>
+            <if test="accountNonLocked != null">account_non_locked = #{accountNonLocked},</if>
+            <if test="credentialsNonExpired != null">credentials_non_expired = #{credentialsNonExpired},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteGoopperUserById" parameterType="Long">
+        delete from user where id = #{id}
+    </delete>
+
+    <delete id="deleteGoopperUserByIds" parameterType="String">
+        delete from user where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectGoopperTeacherList" resultMap="GoopperUserResult">
+        <include refid="selectGoopperUserVo"/>
+        where role_id = 2
+    </select>
+
+</mapper>
