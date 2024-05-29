@@ -1,1 +1,1 @@
-docker build -t registry.cn-hangzhou.aliyuncs.com/goopper/admin:latest
+docker build -t registry.cn-hangzhou.aliyuncs.com/goopper/admin:latest .
