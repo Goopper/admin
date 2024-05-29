@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: admin
+  cloud:
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
+      config:
+        format: YAML
+        data-key: data
+      discovery:
+        service-name: ${spring.application.name}
+        instance-id: ${spring.application.name}:${random.value}
