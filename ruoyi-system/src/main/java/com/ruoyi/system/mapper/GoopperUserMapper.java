@@ -60,4 +60,8 @@ public interface GoopperUserMapper
     public int deleteGoopperUserByIds(String[] ids);
 
     List<GoopperUser> selectGoopperTeacherList();
+
+    GoopperUser selectGoopperUserByNumber(Long number);
+
+    int selectTeacherGroupCount(Long id);
 }

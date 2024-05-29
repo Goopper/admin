@@ -21,6 +21,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 用户管理Controller
@@ -82,6 +83,10 @@ public class GoopperUserController extends BaseController
     {
         // query groups
         List<GoopperGroup> groups = goopperGroupService.selectGoopperGroupList(new GoopperGroup());
+        GoopperGroup emptyGroup = new GoopperGroup();
+        emptyGroup.setId(null);
+        emptyGroup.setName("无");
+        groups.add(0, emptyGroup);
         mmap.put("groups", groups);
         return prefix + "/add";
     }
@@ -138,5 +143,33 @@ public class GoopperUserController extends BaseController
     public AjaxResult remove(String ids)
     {
         return toAjax(goopperUserService.deleteGoopperUserByIds(ids));
+    }
+
+    /**
+     * 导入用户
+     */
+    @Log(title = "用户管理", businessType = BusinessType.IMPORT)
+    @RequiresPermissions("system:user:export")
+    @PostMapping("/importData")
+    @ResponseBody
+    public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception
+    {
+        ExcelUtil<GoopperUser> util = new ExcelUtil<>(GoopperUser.class);
+        List<GoopperUser> userList = util.importExcel(file.getInputStream());
+        String message = goopperUserService.importUser(userList, updateSupport, getLoginName());
+        return AjaxResult.success(message);
+    }
+
+    /**
+     * 导入用户页面
+     * @return
+     */
+    @RequiresPermissions("system:user:view")
+    @GetMapping("/importTemplate")
+    @ResponseBody
+    public AjaxResult importTemplate()
+    {
+        ExcelUtil<GoopperUser> util = new ExcelUtil<>(GoopperUser.class);
+        return util.importTemplateExcel("用户数据");
     }
 }

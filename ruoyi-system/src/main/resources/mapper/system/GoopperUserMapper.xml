@@ -33,15 +33,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             user.number, user.role_id, user.group_id, user.enable, user.account_non_expired,
             user.account_non_locked, user.credentials_non_expired, user.create_time, user.modify_time from user
         left join `group` on user.group_id = `group`.id
-        <where>  
-            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="email != null  and email != ''"> and email like concat('%', #{email}, '%')</if>
-            <if test="sex != null "> and sex = #{sex}</if>
-            <if test="number != null "> and number = #{number}</if>
-            <if test="roleId != null "> and role_id = #{roleId}</if>
-            <if test="groupId != null "> and group_id = #{groupId}</if>
-            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
-            <if test="params.beginModifyTime != null and params.beginModifyTime != '' and params.endModifyTime != null and params.endModifyTime != ''"> and modify_time between #{params.beginModifyTime} and #{params.endModifyTime}</if>
+        <where>
+            user.role_id != 1
+            <if test="name != null  and name != ''"> and user.name like concat('%', #{name}, '%')</if>
+            <if test="email != null  and email != ''"> and user.email like concat('%', #{email}, '%')</if>
+            <if test="sex != null "> and user.sex = #{sex}</if>
+            <if test="number != null "> and user.number = #{number}</if>
+            <if test="roleId != null "> and user.role_id = #{roleId}</if>
+            <if test="groupId != null "> and user.group_id = #{groupId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and user.create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="params.beginModifyTime != null and params.beginModifyTime != '' and params.endModifyTime != null and params.endModifyTime != ''"> and user.modify_time between #{params.beginModifyTime} and #{params.endModifyTime}</if>
         </where>
     </select>
     
@@ -121,6 +122,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectGoopperTeacherList" resultMap="GoopperUserResult">
         <include refid="selectGoopperUserVo"/>
         where role_id = 2
+    </select>
+
+    <select id="selectGoopperUserByNumber" resultMap="GoopperUserResult">
+        <include refid="selectGoopperUserVo"/>
+        where number = #{number}
+    </select>
+
+    <select id="selectTeacherGroupCount" resultType="Integer">
+        select count(1) from `group` where `group`.teacher_id = #{id}
     </select>
 
 </mapper>

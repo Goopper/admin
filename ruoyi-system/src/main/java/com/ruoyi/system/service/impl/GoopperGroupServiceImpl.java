@@ -1,6 +1,9 @@
 package com.ruoyi.system.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,6 +70,9 @@ public class GoopperGroupServiceImpl implements IGoopperGroupService
     @Override
     public int updateGoopperGroup(GoopperGroup goopperGroup)
     {
+        if ("admins".equals(goopperGroup.getName())) {
+            return 0;
+        }
         return goopperGroupMapper.updateGoopperGroup(goopperGroup);
     }
 
@@ -91,6 +97,10 @@ public class GoopperGroupServiceImpl implements IGoopperGroupService
     @Override
     public int deleteGoopperGroupById(Long id)
     {
+        int count = goopperGroupMapper.selectGoopperGroupStudentCountById(id);
+        if (count > 0) {
+            throw new ServiceException("小组/班级存在学生，不能删除");
+        }
         return goopperGroupMapper.deleteGoopperGroupById(id);
     }
 }

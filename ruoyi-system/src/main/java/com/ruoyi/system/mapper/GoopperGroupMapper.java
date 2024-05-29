@@ -58,4 +58,6 @@ public interface GoopperGroupMapper
      * @return 结果
      */
     public int deleteGoopperGroupByIds(String[] ids);
+
+    int selectGoopperGroupStudentCountById(Long id);
 }

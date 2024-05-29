@@ -60,4 +60,6 @@ public interface IGoopperUserService
     public int deleteGoopperUserById(Long id);
 
     List<GoopperUser> selectGoopperTeacherList();
+
+    String importUser(List<GoopperUser> userList, boolean updateSupport, String loginName);
 }

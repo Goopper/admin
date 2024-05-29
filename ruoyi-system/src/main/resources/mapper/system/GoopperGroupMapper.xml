@@ -20,11 +20,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectGoopperGroupList" parameterType="GoopperGroup" resultMap="GoopperGroupResult">
         select `group`.id, `group`.name, `group`.teacher_id, user.name as teacher_name, `group`.create_time, `group`.modify_time from `group`
         inner join user on `group`.teacher_id = user.id
-        <where>  
-            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="teacherId != null "> and teacher_id = #{teacherId}</if>
-            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
-            <if test="params.beginModifyTime != null and params.beginModifyTime != '' and params.endModifyTime != null and params.endModifyTime != ''"> and modify_time between #{params.beginModifyTime} and #{params.endModifyTime}</if>
+        <where>
+            `group`.name != 'admins'
+            <if test="name != null  and name != ''"> and `group`.name like concat('%', #{name}, '%')</if>
+            <if test="teacherId != null "> and `group`.teacher_id = #{teacherId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and `group`.create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="params.beginModifyTime != null and params.beginModifyTime != '' and params.endModifyTime != null and params.endModifyTime != ''"> and `group`.modify_time between #{params.beginModifyTime} and #{params.endModifyTime}</if>
         </where>
     </select>
     
@@ -70,5 +71,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectGoopperGroupStudentCountById" resultType="Integer">
+        select count(1) from `user` where `user`.group_id = #{id}
+    </select>
 
 </mapper>

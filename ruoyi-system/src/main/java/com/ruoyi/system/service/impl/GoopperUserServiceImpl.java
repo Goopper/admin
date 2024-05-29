@@ -2,8 +2,12 @@ package com.ruoyi.system.service.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.GoopperUserMapper;
 import com.ruoyi.system.domain.GoopperUser;
@@ -55,6 +59,7 @@ public class GoopperUserServiceImpl implements IGoopperUserService
     @Override
     public int insertGoopperUser(GoopperUser goopperUser)
     {
+        checkUserCreation(goopperUser);
         goopperUser.setCreateTime(DateUtils.getNowDate());
         return goopperUserMapper.insertGoopperUser(goopperUser);
     }
@@ -68,7 +73,20 @@ public class GoopperUserServiceImpl implements IGoopperUserService
     @Override
     public int updateGoopperUser(GoopperUser goopperUser)
     {
+        checkUserCreation(goopperUser);
         return goopperUserMapper.updateGoopperUser(goopperUser);
+    }
+
+    private void checkUserCreation(GoopperUser goopperUser) {
+        if (goopperUser.getRoleId() != 2 && goopperUser.getRoleId() != 3) {
+            throw new ServiceException("角色只能是学生或老师");
+        }
+        if (goopperUser.getRoleId() == 1 && goopperUser.getGroupId() == null) {
+            throw new ServiceException("学生请选择小组");
+        }
+        if (goopperUser.getRoleId() == 2 && goopperUser.getGroupId() != null) {
+            throw new ServiceException("老师不能选择小组");
+        }
     }
 
     /**
@@ -92,11 +110,90 @@ public class GoopperUserServiceImpl implements IGoopperUserService
     @Override
     public int deleteGoopperUserById(Long id)
     {
+        GoopperUser user = goopperUserMapper.selectGoopperUserById(id);
+        if (user.getRoleId() == 2) {
+            int count = goopperUserMapper.selectTeacherGroupCount(id);
+            if (count > 0) {
+                throw new ServiceException("老师存在小组，不能删除");
+            }
+        }
         return goopperUserMapper.deleteGoopperUserById(id);
     }
 
     @Override
     public List<GoopperUser> selectGoopperTeacherList() {
         return goopperUserMapper.selectGoopperTeacherList();
+    }
+
+    @Override
+    public String importUser(List<GoopperUser> userList, boolean updateSupport, String loginName) {
+        if (userList == null || userList.isEmpty())
+        {
+            throw new ServiceException("导入用户数据不能为空！");
+        }
+        int successNum = 0;
+        int failureNum = 0;
+        StringBuilder successMsg = new StringBuilder();
+        StringBuilder failureMsg = new StringBuilder();
+        for (GoopperUser user : userList)
+        {
+            try
+            {
+                if (user.getRoleId() != 2 && user.getRoleId() != 3) {
+                    throw new ServiceException("角色只能是学生或老师");
+                }
+                if (user.getSex() != 0 && user.getSex() != 1) {
+                    throw new ServiceException("性别只能是男或女");
+                }
+                if (user.getRoleId() == 1 && user.getGroupId() == null) {
+                    throw new ServiceException("创建学生时，请选择小组");
+                }
+                if (user.getRoleId() == 2 && user.getGroupId() != null) {
+                    throw new ServiceException("老师不能选择小组");
+                }
+                // 验证是否存在这个用户
+                GoopperUser u = goopperUserMapper.selectGoopperUserByNumber(user.getNumber());
+                if (u == null)
+                {
+                    user.setCreateBy(loginName);
+                    this.insertGoopperUser(user);
+                    successNum++;
+                    successMsg.append("<br/>" + successNum + "、账号 " + user.getName() + " 导入成功");
+                }
+                else if (updateSupport)
+                {
+                    user.setUpdateBy(loginName);
+                    this.updateGoopperUser(user);
+                    successNum++;
+                    successMsg.append("<br/>" + successNum + "、账号 " + user.getName() + " 更新成功");
+                }
+                else
+                {
+                    failureNum++;
+                    failureMsg.append("<br/>" + failureNum + "、账号 " + user.getName() + " 已存在");
+                }
+            }
+            catch (DuplicateKeyException e)
+            {
+                failureNum++;
+                failureMsg.append("<br/>" + failureNum + "、账号 " + user.getName() + " 已存在");
+            }
+            catch (Exception e)
+            {
+                failureNum++;
+                String msg = "<br/>" + failureNum + "、账号 " + user.getName() + " 导入失败：";
+                failureMsg.append(msg + e.getMessage());
+            }
+        }
+        if (failureNum > 0)
+        {
+            failureMsg.insert(0, "很抱歉，导入失败！共 " + failureNum + " 条数据格式不正确，错误如下：");
+            throw new ServiceException(failureMsg.toString());
+        }
+        else
+        {
+            successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
+        }
+        return successMsg.toString();
     }
 }

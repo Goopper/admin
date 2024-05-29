@@ -41,10 +41,10 @@
                     </select>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" th:if="*{groupId}">
                 <label class="col-sm-3 control-label is-required">小组：</label>
                 <div class="col-sm-8">
-                    <select name="groupId" class="form-control m-b" required>
+                    <select name="groupId" class="form-control m-b">
                         <option th:each="group : ${groups}" th:text="${group.name}" th:value="${group.id}" th:field="*{groupId}"></option>
                     </select>
                 </div>
