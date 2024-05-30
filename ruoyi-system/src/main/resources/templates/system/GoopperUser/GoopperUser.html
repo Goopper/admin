@@ -161,7 +161,7 @@
             <input type="file" id="file" name="file"/>
             <div class="mt10 pt5">
                 <input type="checkbox" id="updateSupport" name="updateSupport" title="如果登录账户已经存在，更新这条数据。"> 是否更新已经存在的用户数据
-                &nbsp;	<a class="btn btn-primary btn-xs" href="/user_import_template.xlsx" download shiro:hasPermission="system:GoopperUser:export">
+                &nbsp;	<a class="btn btn-primary btn-xs" th:href="@{/user_import_template.xlsx}" download shiro:hasPermission="system:GoopperUser:export">
                     <i class="fa fa-file-excel-o"></i> 下载导入模板
                 </a>
             </div>

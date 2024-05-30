@@ -1,0 +1,1 @@
+docker push registry.cn-hangzhou.aliyuncs.com/goopper/admin:latest

@@ -11,3 +11,5 @@ spring:
       discovery:
         service-name: ${spring.application.name}
         instance-id: ${spring.application.name}:${random.value}
+        health-check-path: /admin/common/health
+        health-check-interval: 10s

@@ -62,4 +62,6 @@ public interface IGoopperUserService
     List<GoopperUser> selectGoopperTeacherList();
 
     String importUser(List<GoopperUser> userList, boolean updateSupport, String loginName);
+
+    void updateGoopperUserByNumber(GoopperUser user);
 }

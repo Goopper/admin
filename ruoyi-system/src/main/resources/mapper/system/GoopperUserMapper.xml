@@ -133,4 +133,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select count(1) from `group` where `group`.teacher_id = #{id}
     </select>
 
+    <update id="updateGoopperUserByNumber" parameterType="GoopperUser">
+        update user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="email != null and email != ''">email = #{email},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="roleId != null">role_id = #{roleId},</if>
+            <if test="groupId != null">group_id = #{groupId},</if>
+            <if test="enable != null">enable = #{enable},</if>
+            <if test="accountNonExpired != null">account_non_expired = #{accountNonExpired},</if>
+            <if test="accountNonLocked != null">account_non_locked = #{accountNonLocked},</if>
+            <if test="credentialsNonExpired != null">credentials_non_expired = #{credentialsNonExpired},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+        </trim>
+        where number = #{number}
+    </update>
+
 </mapper>

@@ -163,4 +163,11 @@ public class CommonController
             log.error("下载文件失败", e);
         }
     }
+
+    @ResponseBody
+    @GetMapping("/health")
+    public AjaxResult health()
+    {
+        return AjaxResult.success("goopper-admin is up and running!");
+    }
 }

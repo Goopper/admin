@@ -139,6 +139,21 @@ public class GoopperUserServiceImpl implements IGoopperUserService
         {
             try
             {
+                if (user.getNumber() == null) {
+                    throw new ServiceException("导入工号/学号不能为空");
+                }
+                if (user.getName() == null) {
+                    throw new ServiceException("导入姓名不能为空");
+                }
+                if (user.getRoleId() == null) {
+                    throw new ServiceException("导入角色不能为空");
+                }
+                if (user.getSex() == null) {
+                    throw new ServiceException("导入性别不能为空");
+                }
+                if (user.getEmail() == null) {
+                    throw new ServiceException("导入邮箱不能为空");
+                }
                 if (user.getRoleId() != 2 && user.getRoleId() != 3) {
                     throw new ServiceException("角色只能是学生或老师");
                 }
@@ -163,7 +178,7 @@ public class GoopperUserServiceImpl implements IGoopperUserService
                 else if (updateSupport)
                 {
                     user.setUpdateBy(loginName);
-                    this.updateGoopperUser(user);
+                    this.updateGoopperUserByNumber(user);
                     successNum++;
                     successMsg.append("<br/>" + successNum + "、账号 " + user.getName() + " 更新成功");
                 }
@@ -195,5 +210,10 @@ public class GoopperUserServiceImpl implements IGoopperUserService
             successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
         }
         return successMsg.toString();
+    }
+
+    @Override
+    public void updateGoopperUserByNumber(GoopperUser user) {
+        goopperUserMapper.updateGoopperUserByNumber(user);
     }
 }

@@ -64,4 +64,6 @@ public interface GoopperUserMapper
     GoopperUser selectGoopperUserByNumber(Long number);
 
     int selectTeacherGroupCount(Long id);
+
+    void updateGoopperUserByNumber(GoopperUser user);
 }
